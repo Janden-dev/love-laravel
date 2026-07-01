@@ -17,9 +17,9 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    public function getAuthIdentifierName(): string
+    public function getAuthIdentifier(): mixed
     {
-        return 'username';
+        return $this->getKey();
     }
 
     /**
