@@ -58,20 +58,74 @@ class ProfileController extends Controller
     public function uploadPhoto(Request $request)
     {
         $request->validate([
-            'photo' => 'required|image|mimes:jpeg,png,gif,webp|max:5120',
+            'photo' => 'required|image|mimes:jpeg,png,gif,webp|max:20480',
         ]);
 
         $file = $request->file('photo');
-        $stored = $file->store('uploads', ['disk' => 'private_uploads']);
+
+        // 自动压缩：最长边缩至 1920px，JPEG 质量 80%
+        $compressed = $this->compressImage($file);
+        $filename = pathinfo($file->hashName(), PATHINFO_FILENAME) . '.jpg';
+        $path = 'uploads/' . $filename;
+        Storage::disk('private_uploads')->put($path, $compressed);
 
         Photo::create([
             'user_id' => Auth::id(),
-            'filename' => basename($stored),
+            'filename' => $filename,
             'caption' => '',
             'taken_at' => Carbon::today(),
         ]);
 
         return back()->with('success', '照片已上传 💕');
+    }
+
+    /**
+     * 用 GD 压缩图片：最长边 ≤ 1920px，JPEG 质量 80%
+     */
+    private function compressImage($file): string
+    {
+        $maxDim = 1920;
+        $quality = 80;
+
+        // 根据 mime 类型创建 GD 图像资源
+        $mime = $file->getMimeType();
+        $source = match ($mime) {
+            'image/jpeg' => @imagecreatefromjpeg($file->getRealPath()),
+            'image/png'  => @imagecreatefrompng($file->getRealPath()),
+            'image/gif'  => @imagecreatefromgif($file->getRealPath()),
+            'image/webp' => @imagecreatefromwebp($file->getRealPath()),
+            default      => @imagecreatefromjpeg($file->getRealPath()),
+        };
+
+        if (!$source) {
+            // GD 打不开就走原始文件
+            return file_get_contents($file->getRealPath());
+        }
+
+        $origW = imagesx($source);
+        $origH = imagesy($source);
+
+        // 计算缩放比例
+        $ratio = min($maxDim / $origW, $maxDim / $origH, 1);
+        $newW = (int) round($origW * $ratio);
+        $newH = (int) round($origH * $ratio);
+
+        if ($ratio >= 1) {
+            // 原本就不大，直接输出 JPEG
+            imagedestroy($source);
+            return (string) $file->get();
+        }
+
+        $canvas = imagecreatetruecolor($newW, $newH);
+        imagecopyresampled($canvas, $source, 0, 0, 0, 0, $newW, $newH, $origW, $origH);
+        imagedestroy($source);
+
+        ob_start();
+        imagejpeg($canvas, null, $quality);
+        $data = ob_get_clean();
+        imagedestroy($canvas);
+
+        return $data;
     }
 
     public function deletePhoto(Photo $photo)

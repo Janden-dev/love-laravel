@@ -584,3 +584,101 @@ echo "========================================"
 | 日志文件       | `/home/ubuntu/larry/storage/logs/laravel.log`   |
 | Nginx 错误日志 | `/var/log/nginx/laravel-error.log`              |
 | Nginx 访问日志 | `/var/log/nginx/laravel-access.log`             |
+| 上传持久目录   | `/var/www/love-laravel-uploads`                 |
+| 备份目录       | `/home/ubuntu/backups/`                         |
+| 备份脚本       | `/home/ubuntu/backups/backup.sh`                |
+
+---
+
+## 13. 数据库备份
+
+### 13.1 自动备份
+
+Cron 每天 03:07 执行备份，保留最近 30 天：
+
+```bash
+# 备份脚本路径
+/home/ubuntu/backups/backup.sh
+
+# Cron 配置
+7 3 * * * /home/ubuntu/backups/backup.sh > /dev/null 2>&1
+```
+
+### 13.2 手动备份
+
+```bash
+# 立即执行一次备份
+bash /home/ubuntu/backups/backup.sh
+
+# 查看备份文件
+ls -lh /home/ubuntu/backups/*.sql.gz
+
+# 手动备份到指定文件
+mysqldump -u root -p'Larry@0103!' love_larry > /tmp/love_larry_backup.sql
+```
+
+### 13.3 恢复备份
+
+```bash
+gunzip < /home/ubuntu/backups/love_larry_20260702_*.sql.gz | mysql -u root -p'Larry@0103!' love_larry
+```
+
+---
+
+## 14. 持久化上传目录
+
+上传的图片存储在项目目录外的独立路径，避免重新部署时丢失：
+
+| 配置项 | 值 |
+|--------|-----|
+| 环境变量 | `PRIVATE_UPLOADS_ROOT=/var/www/love-laravel-uploads` |
+| 物理路径 | `/var/www/love-laravel-uploads` |
+| 所有者 | `www-data:www-data` |
+| 权限 | `775` |
+| 配置来源 | `config/filesystems.php` 中 `private_uploads` disk |
+
+> **跨部署持久化原理：** 项目代码通过 `git clone` 更新，但上传目录指向 `/var/www/love-laravel-uploads`，不在项目目录内，所以重新部署不会影响已上传的文件。
+
+### 不同环境适配
+
+| 环境 | 方案 |
+|------|------|
+| **VPS/物理机** | 直接用 `/var/www/love-laravel-uploads`，部署脚本自动创建 |
+| **Docker** | `docker run -v /host/persistent-dir:/var/www/love-laravel-uploads ...` |
+| **共享主机** | 软链：`ln -sfn /home/user/persistent-uploads /path/to/project/storage/app/private/uploads` |
+
+---
+
+## 15. 一键部署脚本
+
+项目自带 `deploy/` 目录，包含自动化部署工具：
+
+| 文件 | 作用 |
+|------|------|
+| `deploy/deploy.sh` | 一键部署主脚本（11 个步骤全自动） |
+| `deploy/.env.production` | 生产环境 .env 模板 |
+| `deploy/nginx-laravel.conf` | Nginx 配置模板 |
+
+### 用法
+
+```bash
+# 基本部署
+sudo bash deploy/deploy.sh
+
+# 指定域名
+sudo bash deploy/deploy.sh --url https://love.yourdomain.com
+```
+
+### deploy.sh 自动完成的 11 步
+
+1. 环境检查（软件 + PHP 扩展）
+2. 从 GitHub 克隆/拉取最新代码
+3. 创建 MySQL 数据库
+4. 写入 `.env`（从模板替换 URL/密码）
+5. `composer install` 安装 PHP 依赖
+6. `key:generate` + `npm run build` 前端构建
+7. `migrate --force` 运行数据库迁移
+8. 创建持久化上传目录 `/var/www/love-laravel-uploads`
+9. 写入 Nginx 配置并 reload
+10. 设置 `storage/` + `bootstrap/cache/` 权限
+11. `config:cache` + `route:cache` + `view:cache` 生产优化
