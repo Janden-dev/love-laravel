@@ -3,7 +3,7 @@
 @section('content')
     <div class="login-wrap">
         <div class="login-card">
-            <h1>💕 Larry & Me</h1>
+            <h1>💕 Larry & Janden</h1>
             <p>恋爱纪念日 · 专属入口</p>
 
             @if($errors->any())
