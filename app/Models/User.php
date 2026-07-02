@@ -17,6 +17,11 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    public function diaries()
+    {
+        return $this->hasMany(Diary::class);
+    }
+
     public function getAuthIdentifier(): mixed
     {
         return $this->getKey();

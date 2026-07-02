@@ -24,6 +24,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/diary', [DiaryController::class, 'index'])->name('diary.index');
     Route::post('/diary', [DiaryController::class, 'store'])->name('diary.store');
 
+    Route::post('/miss-you', [HomeController::class, 'missYou'])->name('miss-you');
+
+    Route::get('/questions', [App\Http\Controllers\QuestionController::class, 'index'])->name('questions.index');
+    Route::post('/questions', [App\Http\Controllers\QuestionController::class, 'store'])->name('questions.store');
+    Route::post('/questions/{question}/answer', [App\Http\Controllers\QuestionController::class, 'answer'])->name('questions.answer');
+    Route::delete('/questions/{question}', [App\Http\Controllers\QuestionController::class, 'destroy'])->name('questions.destroy');
+
     Route::get('/about', [ProfileController::class, 'show'])->name('about');
     Route::post('/about', [ProfileController::class, 'update'])->name('about.update');
     Route::post('/photos', [ProfileController::class, 'uploadPhoto'])->name('photos.store');

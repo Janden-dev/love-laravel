@@ -45,5 +45,7 @@
     </div>
 
     @yield('lightbox')
+
+    @stack('scripts')
 </body>
 </html>

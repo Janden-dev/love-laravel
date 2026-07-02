@@ -172,6 +172,36 @@ body.dark .timer-card {
     display: inline-block;
 }
 
+/* Miss-you bar */
+.miss-you-bar {
+    margin-top: 18px;
+    font-size: 13px;
+    opacity: .95;
+    background: rgba(255, 255, 255, .2);
+    padding: 8px 14px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.miss-you-bar strong {
+    font-size: 16px;
+}
+
+.miss-divider {
+    opacity: .5;
+}
+
+/* Make the heart cursor pointer for miss-you click */
+#missYouHeart {
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
 .section-title {
     font-size: 16px;
     font-weight: 700;
@@ -710,8 +740,30 @@ body.dark .alert-success {
 }
 
 .name-toggle-row {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin: -6px 0 16px;
+    padding: 0 8px;
+}
+
+.qa-entry {
+    background: var(--primary);
+    color: #fff;
+    border-radius: 20px;
+    padding: 7px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.qa-entry:active {
+    opacity: .85;
+    transform: scale(.95);
 }
 
 .logout-btn {
@@ -728,4 +780,149 @@ body.dark .alert-success {
     cursor: pointer;
     box-shadow: var(--shadow);
     color: var(--text);
+}
+
+/* Diary author info on home page */
+.diary-author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--secondary);
+}
+
+.diary-author .author-avatar {
+    font-size: 24px;
+}
+
+.diary-author .author-name {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+}
+
+.diary-author .d-date {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-light);
+}
+
+/* Viewing tag on diary page */
+.viewing-tag {
+    display: inline-block;
+    font-size: 12px;
+    color: var(--text-light);
+    background: var(--secondary);
+    padding: 2px 10px;
+    border-radius: 10px;
+    margin-left: 8px;
+    font-weight: 400;
+}
+
+/* ============ 问答页面 ============ */
+.q-section-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 4px 4px 12px;
+    color: var(--text);
+}
+
+.q-item {
+    position: relative;
+}
+
+.q-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.q-asker {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary-dark);
+}
+
+.q-time {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-left: auto;
+}
+
+.q-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text);
+    padding: 8px 12px;
+    background: var(--secondary);
+    border-radius: 12px;
+    margin-bottom: 8px;
+}
+
+.q-item.q-incoming {
+    border-left: 3px solid var(--primary);
+}
+
+.q-answer-form textarea {
+    width: 100%;
+    border: 1.5px solid var(--secondary);
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 14px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: inherit;
+    resize: vertical;
+}
+
+.q-answer-form textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.q-answer {
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 10px 12px;
+    background: #fff0f3;
+    border-radius: 12px;
+    margin-top: 4px;
+}
+
+body.dark .q-answer {
+    background: #3a2a30;
+}
+
+.q-answer-label {
+    font-weight: 600;
+    color: var(--primary-dark);
+}
+
+.q-waiting {
+    font-size: 13px;
+    color: var(--text-light);
+    text-align: center;
+    padding: 8px;
+}
+
+.q-del-form {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}
+
+.q-del-btn {
+    background: var(--secondary);
+    border: none;
+    border-radius: 8px;
+    padding: 2px 6px;
+    font-size: 14px;
+    cursor: pointer;
+    opacity: .6;
+}
+
+.q-del-btn:active {
+    opacity: 1;
 }
