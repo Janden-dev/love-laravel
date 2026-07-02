@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/about', [ProfileController::class, 'show'])->name('about');
     Route::post('/about', [ProfileController::class, 'update'])->name('about.update');
     Route::post('/photos', [ProfileController::class, 'uploadPhoto'])->name('photos.store');
+    Route::get('/photos/{photo}/file', [ProfileController::class, 'servePhoto'])->name('photos.file');
     Route::delete('/photos/{photo}', [ProfileController::class, 'deletePhoto'])->name('photos.destroy');
 
     Route::post('/toggle-name-lang', function () {

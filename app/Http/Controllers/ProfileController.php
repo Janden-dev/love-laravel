@@ -62,10 +62,11 @@ class ProfileController extends Controller
         ]);
 
         $file = $request->file('photo');
-        $filename = $file->storePublicly('uploads', ['disk' => 'public']);
+        $stored = $file->store('uploads', ['disk' => 'private_uploads']);
 
         Photo::create([
-            'filename' => basename($filename),
+            'user_id' => Auth::id(),
+            'filename' => basename($stored),
             'caption' => '',
             'taken_at' => Carbon::today(),
         ]);
@@ -75,8 +76,20 @@ class ProfileController extends Controller
 
     public function deletePhoto(Photo $photo)
     {
-        Storage::disk('public')->delete('uploads/' . $photo->filename);
+        Storage::disk('private_uploads')->delete('uploads/' . $photo->filename);
         $photo->delete();
+
         return back()->with('success', '照片已删除');
+    }
+
+    public function servePhoto(Photo $photo)
+    {
+        $path = 'uploads/' . $photo->filename;
+
+        if (! Storage::disk('private_uploads')->exists($path)) {
+            abort(404);
+        }
+
+        return Storage::disk('private_uploads')->response($path);
     }
 }

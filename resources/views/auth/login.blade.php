@@ -14,7 +14,7 @@
                 @csrf
                 <div class="form-group">
                     <label>用户名</label>
-                    <input type="text" name="username" value="{{ old('username') }}" placeholder="janden" autofocus>
+                    <input type="text" name="username" value="{{ old('username') }}" placeholder="请输入用户名" autofocus>
                 </div>
                 <div class="form-group">
                     <label>密码</label>
@@ -23,7 +23,6 @@
                 <button type="submit" class="btn btn-primary" style="width:100%;">进入我们的世界</button>
             </form>
 
-            <p style="margin-top:18px;font-size:12px;color:var(--text-light);">默认账号：janden / larry2026</p>
         </div>
     </div>
 @endsection

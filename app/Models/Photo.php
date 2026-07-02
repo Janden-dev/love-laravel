@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Photo extends Model
 {
-    protected $fillable = ['filename', 'caption', 'taken_at'];
+    protected $fillable = ['user_id', 'filename', 'caption', 'taken_at'];
 
     protected function casts(): array
     {
@@ -15,8 +16,13 @@ class Photo extends Model
         ];
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function url(): string
     {
-        return asset('storage/uploads/' . $this->filename);
+        return route('photos.file', $this);
     }
 }

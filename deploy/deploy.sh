@@ -147,7 +147,7 @@ step "6/11 数据库迁移"
 php artisan migrate --force
 ok "迁移完成"
 php artisan db:seed --class=UserSeeder --force
-ok "默认用户已创建 (janden / larry2026)"
+ok "默认用户已创建 (janden / 20030103, larry / 20030415)"
 
 # ====== 7. 构建前端 ======
 step "7/11 构建前端资源"
@@ -178,8 +178,16 @@ else
   ok "Nginx 已配置并重载"
 fi
 
-# ====== 9. 设置文件权限 ======
-step "9/11 设置文件权限"
+# ====== 9. 配置持久化上传目录 ======
+step "9/11 配置持久化上传目录"
+UPLOADS_DIR="/var/www/love-laravel-uploads"
+$SUDO mkdir -p "$UPLOADS_DIR"
+$SUDO chown "${WEB_USER}:${WEB_USER}" "$UPLOADS_DIR"
+$SUDO chmod 775 "$UPLOADS_DIR"
+ok "上传目录已就绪: $UPLOADS_DIR (不会被重新部署覆盖)"
+
+# ====== 10. 设置文件权限 ======
+step "10/11 设置文件权限"
 # www-data 需要能遍历项目所在目录链
 PARENT="$PROJECT_ROOT"
 while [[ "$PARENT" != "/" && "$PARENT" != "$HOME" ]]; do
@@ -191,8 +199,8 @@ $SUDO chown -R "${WEB_USER}:${WEB_USER}" "$PROJECT_ROOT/storage" "$PROJECT_ROOT/
 $SUDO chmod -R 775 "$PROJECT_ROOT/storage" "$PROJECT_ROOT/bootstrap/cache"
 ok "storage / bootstrap/cache 权限已设置为 $WEB_USER"
 
-# ====== 10. 生产优化（以 www-data 组身份执行）======
-step "10/11 Laravel 生产优化"
+# ====== 11. 生产优化（以 www-data 组身份执行）======
+step "11/11 Laravel 生产优化"
 $SUDO touch "$PROJECT_ROOT/storage/logs/laravel.log"
 $SUDO chown "${WEB_USER}:${WEB_USER}" "$PROJECT_ROOT/storage/logs/laravel.log"
 $SUDO chmod 664 "$PROJECT_ROOT/storage/logs/laravel.log"
@@ -206,8 +214,8 @@ else
   ok "配置/路由/视图缓存已生成"
 fi
 
-# ====== 11. 验证 ======
-step "11/11 验证部署"
+# ====== 12. 验证 ======
+step "12/11 验证部署"
 if [[ $SKIP_NGINX -eq 0 ]]; then
   HTTP_CODE="$(curl -s -o /dev/null -w '%{http_code}' "$APP_URL/" || echo 000)"
   if [[ "$HTTP_CODE" == "200" ]]; then
