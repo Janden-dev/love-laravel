@@ -102,7 +102,6 @@
         const myCountEl = document.getElementById('myMissCount');
         const partnerCountEl = document.getElementById('partnerMissCount');
 
-        // 点击动画
         heart.style.transition = 'transform .15s ease';
         heart.style.transform = 'scale(1.3)';
         setTimeout(() => { heart.style.transform = 'scale(1)'; }, 150);

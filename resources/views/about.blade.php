@@ -80,11 +80,29 @@
             </div>
 
             <div class="section-title">📸 照片墙
+                <span style="flex:1;"></span>
+                <button type="button" class="add-btn" id="photoDateToggle" title="选择日期">📅</button>
                 <form id="photoForm" method="POST" action="{{ route('photos.store') }}" enctype="multipart/form-data" style="display:inline;">
                     @csrf
                     <input type="file" id="photoInput" name="photo" accept="image/*" style="display:none;">
                     <label for="photoInput" class="add-btn">+</label>
                 </form>
+            </div>
+
+            {{-- 日期选择弹窗 --}}
+            <div class="photo-date-popup" id="photoDatePopup" style="display:none;">
+                <div class="photo-date-popup-card">
+                    <div class="photo-date-popup-title">📅 选择日期</div>
+                    <form method="GET" action="{{ route('about') }}" autocomplete="off">
+                        <input type="date" name="photo_date" value="{{ $photoDate ?? $availableDates->first() }}"
+                               min="{{ $availableDates->last() }}" max="{{ $availableDates->first() }}"
+                               class="photo-date-input">
+                        <div class="photo-date-popup-actions">
+                            <button type="submit" class="btn btn-primary" style="flex:1;">确认</button>
+                            <button type="button" class="btn btn-secondary" onclick="closePhotoDatePicker()">取消</button>
+                        </div>
+                    </form>
+                </div>
             </div>
 
             <div class="card">
@@ -107,6 +125,17 @@
         </section>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+    document.getElementById('photoDateToggle')?.addEventListener('click', function () {
+        document.getElementById('photoDatePopup').style.display = 'flex';
+    });
+    window.closePhotoDatePicker = function () {
+        document.getElementById('photoDatePopup').style.display = 'none';
+    };
+    </script>
+@endpush
 
 @section('lightbox')
     <div class="lightbox" id="lightbox">

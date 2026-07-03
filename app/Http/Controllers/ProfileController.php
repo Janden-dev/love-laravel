@@ -24,14 +24,25 @@ class ProfileController extends Controller
         ];
     }
 
-    public function show()
+    public function show(Request $request)
     {
         $start = Carbon::parse(self::START_DATE)->startOfDay();
         $days = max(0, $start->diffInDays(Carbon::today(), false));
-        $photos = Photo::orderByDesc('created_at')->get();
         $profile = $this->profile();
 
-        return view('about', compact('days', 'photos', 'profile'));
+        // 获取所有有照片的日期，按日期降序
+        $availableDates = Photo::selectRaw('DATE(taken_at) as date')
+            ->groupBy('date')
+            ->orderByDesc('date')
+            ->pluck('date');
+
+        // 默认选中最新日期，用户可选择其他日期
+        $photoDate = $request->input('photo_date', $availableDates->first());
+        $photos = Photo::whereDate('taken_at', $photoDate)
+            ->orderByDesc('created_at')
+            ->get();
+
+        return view('about', compact('days', 'photos', 'profile', 'availableDates', 'photoDate'));
     }
 
     public function update(Request $request)
